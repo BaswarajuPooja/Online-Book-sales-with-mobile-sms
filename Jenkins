@@ -1,0 +1,50 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = 'online-book-sales'
+        CONTAINER_NAME = 'book-sales-container'
+        PORT = '8080'
+    }
+
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git 'https://github.com/your-username/your-repo-name.git'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                echo '🛠️ Building Docker image...'
+                sh "docker build -t $IMAGE_NAME ."
+            }
+        }
+
+        stage('Stop Existing Container') {
+            steps {
+                echo '🧹 Stopping old container (if any)...'
+                sh """
+                    docker stop $CONTAINER_NAME || true
+                    docker rm $CONTAINER_NAME || true
+                """
+            }
+        }
+
+        stage('Run Docker Container') {
+            steps {
+                echo '🚀 Running the new container...'
+                sh "docker run -d -p $PORT:80 --name $CONTAINER_NAME $IMAGE_NAME"
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "✅ Deployment successful! Visit: http://<your-server-ip>:8080"
+        }
+        failure {
+            echo "❌ Build or deploy failed."
+        }
+    }
+}
