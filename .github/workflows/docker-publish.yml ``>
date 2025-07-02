@@ -36,4 +36,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: YOUR_DOCKERHUB_USERNAME/ehospital-frontend:latest
+          tags: pooja1213/ehospital-frontend:latest
